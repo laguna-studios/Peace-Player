@@ -147,7 +147,6 @@ class AppCubit extends Cubit<AppState> {
   }
 
   Future<void> _initDatabase() async {
-    await Hive.initFlutter();
     Hive.registerAdapter(SongAdapter());
     Hive.registerAdapter(AlbumAdapter());
     Hive.registerAdapter(ArtistAdapter());
@@ -209,9 +208,12 @@ class AppCubit extends Cubit<AppState> {
                     metadata["artist"] ?? "Unknown Artist",
                     false);
 
-                songs.put(song.path, song);
-                albums.put(song.album, Album(song.album, song.artist, false));
-                artists.put(song.artist, Artist(song.artist, false));
+                // haven't seen before
+                if (!songs.containsKey(song.path)) {
+                  songs.put(song.path, song);
+                  albums.put(song.album, Album(song.album, song.artist, false));
+                  artists.put(song.artist, Artist(song.artist, false));
+                }
               } catch (e, s) {
                 print("skipping : ${entity.path}");
                 print(s);

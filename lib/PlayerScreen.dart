@@ -245,7 +245,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       title: Text("Like App",
                           style: TextStyle(color: Colors.white)),
                       onTap: () async {
-                        _launch("https://google.de");
+                        _like();
                         Navigator.pop(context);
                       },
                     ),
@@ -254,7 +254,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       title: Text("Get Pro Version",
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
-                        _launch("https://google.de");
+                        _launch(
+                            "https://play.google.com/store/apps/details?id=org.seniorlaguna.peacepro");
                         Navigator.pop(context);
                       },
                     ),
@@ -284,7 +285,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       title: Text("Contact",
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
-                        _launch("https://google.de");
+                        _launch(
+                            "https://seniorlaguna.bitbucket.io/contact.html");
                         Navigator.pop(context);
                       },
                     ),
@@ -293,7 +295,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       title: Text("Terms Of Use",
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
-                        _launch("https://google.de");
+                        _launch(
+                            "https://seniorlaguna.bitbucket.io/peace-player/terms.html");
                         Navigator.pop(context);
                       },
                     ),
@@ -302,7 +305,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       title: Text("Privacy Policy",
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
-                        _launch("https://google.de");
+                        _launch(
+                            "https://seniorlaguna.bitbucket.io/peace-player/privacy.html");
                         Navigator.pop(context);
                       },
                     )
@@ -314,6 +318,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
     );
   }
 
+  Future<void> _like() {
+    return _launch(
+        "https://play.google.com/store/apps/details?id=org.seniorlaguna.peace");
+  }
+
   Future<void> _launch(String url) async {
     await canLaunch(url) && await launch(url);
   }
@@ -322,163 +331,209 @@ class _PlayerScreenState extends State<PlayerScreen> {
     Scaffold.of(context).openDrawer();
   }
 
+  void _askForRating(BuildContext context) {
+    LikeDialog.show(context, onLike: _like);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppState>(
       builder: (context, state) {
-        if (!state.initialized) return Container();
+        // not initialized yet
+        if (!state.initialized) return WaitScreen();
 
         List<dynamic> items = _getDataSourceAll(context, state.selectedTab);
         List<dynamic> likes =
             _getDataSourceFavorites(context, state.selectedTab);
 
-        return SafeArea(
-          child: Scaffold(
-            drawer: _getDrawer(context),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: state.currentMediaItem == null
-                ? null
-                : Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: PlaybackActionButton(
-                      80,
-                      MediaQuery.of(context).size.width * 0.9,
-                      () {
-                        showModalBottomSheet(
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            context: context,
-                            builder: (context) {
-                              return PlaybackScreen();
-                            });
-                      },
+        return BlocListener<AdsCubit, AdsState>(
+          listenWhen: (old, now) => now.like && !old.like,
+          listener: (_, __) => _askForRating(context),
+          child: SafeArea(
+            child: Scaffold(
+              drawer: _getDrawer(context),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+              floatingActionButton: state.currentMediaItem == null
+                  ? null
+                  : Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: PlaybackActionButton(
+                        80,
+                        MediaQuery.of(context).size.width * 0.9,
+                        () {
+                          showModalBottomSheet(
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              builder: (context) {
+                                return PlaybackScreen();
+                              });
+                        },
+                      ),
                     ),
-                  ),
-            body: Builder(
-              builder: (context) {
-                return Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: 50,
-                          child: Stack(
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8.0),
-                                      child: IconButton(
-                                        icon: Icon(Icons.menu),
-                                        onPressed: () => _toggleDrawer(context),
-                                      ),
-                                    ),
-                                    Text(
-                                      "Peace Player",
-                                      style: PlayerScreen.welcomeTextStyle,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Positioned(
-                                  right: 0,
-                                  child: SearchButton(onSearch: (search) {
-                                    setState(() {
-                                      this.search = search;
-                                    });
-                                  }))
-                            ],
-                          ),
-                        ),
-                      ),
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        sliver: SliverPersistentHeader(
-                          delegate: SwitchBar(),
-                          floating: true,
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Text("Favorites",
-                            style: PlayerScreen.subTitleTextStyle),
-                      ),
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        sliver: SliverToBoxAdapter(
-                            child: SizedBox(
-                          height: 200,
-                          child: likes.isEmpty
-                              ? Center(child: Text("No favorites yet"))
-                              : ListView.builder(
-                                  itemCount: likes.length,
-                                  itemBuilder: (context, i) => Padding(
+              body: Builder(
+                builder: (context) {
+                  return Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: CustomScrollView(
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: 50,
+                            child: Stack(
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Padding(
                                         padding:
                                             const EdgeInsets.only(right: 8.0),
-                                        child: _getMediaCard(context,
-                                            state.selectedTab, likes[i], i),
+                                        child: IconButton(
+                                          icon: Icon(Icons.menu),
+                                          onPressed: () =>
+                                              _toggleDrawer(context),
+                                        ),
                                       ),
-                                  scrollDirection: Axis.horizontal),
-                        )),
-                      ),
-                      SliverToBoxAdapter(
-                          child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          height: 50,
+                                      Text(
+                                        "Peace Player",
+                                        style: PlayerScreen.welcomeTextStyle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Positioned(
+                                    right: 0,
+                                    child: SearchButton(onSearch: (search) {
+                                      setState(() {
+                                        this.search = search;
+                                      });
+                                    }))
+                              ],
+                            ),
+                          ),
+                        ),
+                        SliverPadding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          sliver: SliverPersistentHeader(
+                            delegate: SwitchBar(),
+                            floating: true,
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: Text("Favorites",
+                              style: PlayerScreen.subTitleTextStyle),
+                        ),
+                        SliverPadding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          sliver: SliverToBoxAdapter(
+                              child: SizedBox(
+                            height: 200,
+                            child: likes.isEmpty
+                                ? Center(child: Text("No favorites yet"))
+                                : ListView.builder(
+                                    itemCount: likes.length,
+                                    itemBuilder: (context, i) => Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 8.0),
+                                          child: _getMediaCard(context,
+                                              state.selectedTab, likes[i], i),
+                                        ),
+                                    scrollDirection: Axis.horizontal),
+                          )),
+                        ),
+                        SliverToBoxAdapter(
+                            child: Padding(
+                          padding: const EdgeInsets.all(8.0),
                           child: BlocBuilder<AdsCubit, AdsState>(
                               builder: (context, adsState) {
                             // not ready yet
                             if (!adsState.isReady(state.selectedTab)) {
-                              return Container();
+                              return Container(
+                                height: 0,
+                              );
                             }
 
-                            return AdWidget(
-                                ad: AdsCubit.of(context)
-                                    .getBanner(state.selectedTab));
+                            return SizedBox(
+                              height: 50,
+                              child: AdWidget(
+                                  ad: AdsCubit.of(context)
+                                      .getBanner(state.selectedTab)),
+                            );
                           }),
+                        )),
+                        SliverPadding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          sliver: SliverToBoxAdapter(
+                            child: Text(_getHeader2(state.selectedTab),
+                                style: PlayerScreen.subTitleTextStyle),
+                          ),
                         ),
-                      )),
-                      SliverPadding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        sliver: SliverToBoxAdapter(
-                          child: Text(_getHeader2(state.selectedTab),
-                              style: PlayerScreen.subTitleTextStyle),
-                        ),
-                      ),
-                      SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                        (context, i) {
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (i > 0) Divider(color: Color(0xFF3a3a3a)),
-                              i == items.length
-                                  ? SizedBox(height: 100)
-                                  : _getMediaItem(
-                                      context, state.selectedTab, items[i], i,
-                                      playlist: (state.selectedTab ==
-                                              SelectedTab.SONG)
-                                          ? items as List<Song>
-                                          : []),
-                            ],
-                          );
-                        },
-                        childCount: items.length + 1,
-                      ))
-                    ],
-                  ),
-                );
-              },
+                        SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                          (context, i) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (i > 0) Divider(color: Color(0xFF3a3a3a)),
+                                i == items.length
+                                    ? SizedBox(height: 100)
+                                    : _getMediaItem(
+                                        context, state.selectedTab, items[i], i,
+                                        playlist: (state.selectedTab ==
+                                                SelectedTab.SONG)
+                                            ? items as List<Song>
+                                            : []),
+                              ],
+                            );
+                          },
+                          childCount: items.length + 1,
+                        ))
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class WaitScreen extends StatelessWidget {
+  const WaitScreen({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 24.0),
+            child: CircularProgressIndicator(
+              color: Colors.deepPurple,
+            ),
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                "Please wait... First start up might take a bit longer 😀",
+                style: TextStyle(fontSize: 20),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -841,6 +896,7 @@ class _SearchButtonState extends State<SearchButton> {
           if (searching)
             Expanded(
                 child: TextField(
+                    autofocus: true,
                     onChanged: widget.onSearch,
                     onSubmitted: widget.onSearch,
                     controller: _controller,
@@ -874,5 +930,29 @@ class _SearchButtonState extends State<SearchButton> {
             ),
           )
         ]));
+  }
+}
+
+class LikeDialog extends StatelessWidget {
+  final Function onLike;
+
+  /// convenience method
+  static Future<void> show(BuildContext context, {required Function onLike}) =>
+      showDialog(context: context, builder: (_) => LikeDialog(onLike: onLike));
+
+  const LikeDialog({Key? key, required this.onLike}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text("We need your feedback!"),
+      content:
+          Text("We would love to hear what you think about Peace Player :)"),
+      actions: [
+        TextButton(onPressed: () => onLike(), child: Text("Let's go")),
+        TextButton(
+            onPressed: () => Navigator.pop(context), child: Text("Nope")),
+      ],
+    );
   }
 }

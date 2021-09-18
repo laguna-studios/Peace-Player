@@ -6,8 +6,10 @@ part 'Models.g.dart';
 class Song extends HiveObject {
   @HiveField(0)
   String path;
+
   @HiveField(1)
   String name;
+
   @HiveField(2)
   String album;
   @HiveField(3)
