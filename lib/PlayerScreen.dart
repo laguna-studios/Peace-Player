@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:peace/AdsCubit.dart';
 import 'package:peace/MediaScreen.dart';
 import 'package:peace/AppCubit.dart';
@@ -249,16 +248,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         Navigator.pop(context);
                       },
                     ),
-                    ListTile(
-                      leading: Icon(Icons.star, color: Colors.white),
-                      title: Text("Get Pro Version",
-                          style: TextStyle(color: Colors.white)),
-                      onTap: () {
-                        _launch(
-                            "https://play.google.com/store/apps/details?id=org.seniorlaguna.peacepro");
-                        Navigator.pop(context);
-                      },
-                    ),
                     Padding(
                       padding: const EdgeInsets.only(left: 8),
                       child: Text("Legal", style: TextStyle(fontSize: 16)),
@@ -319,7 +308,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Future<void> _like() {
     return _launch(
-        "https://play.google.com/store/apps/details?id=org.seniorlaguna.peace");
+        "https://play.google.com/store/apps/details?id=org.seniorlaguna.peacepro");
   }
 
   Future<void> _launch(String url) async {
@@ -443,26 +432,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                     scrollDirection: Axis.horizontal),
                           )),
                         ),
-                        SliverToBoxAdapter(
-                            child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: BlocBuilder<AdsCubit, AdsState>(
-                              builder: (context, adsState) {
-                            // not ready yet
-                            if (!adsState.isReady(state.selectedTab)) {
-                              return Container(
-                                height: 0,
-                              );
-                            }
-
-                            return SizedBox(
-                              height: 50,
-                              child: AdWidget(
-                                  ad: AdsCubit.of(context)
-                                      .getBanner(state.selectedTab)),
-                            );
-                          }),
-                        )),
                         SliverPadding(
                           padding: const EdgeInsets.only(bottom: 16),
                           sliver: SliverToBoxAdapter(

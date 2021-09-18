@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:peace/AdsCubit.dart';
 import 'package:peace/PlayerScreen.dart';
@@ -13,7 +12,6 @@ const int THUMBNAIL_COUNT = 74;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
   await Hive.initFlutter();
 
   var status = await Permission.storage.request();

@@ -1,21 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.peace">
 
-  <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.WAKE_LOCK"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
 
    <application
-        android:label="Peace Player"
+        android:label="Peace Player Pro"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
         >
-
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7519220681088057~4898198455"/>
 
         <service android:name="com.ryanheise.audioservice.AudioService">
           <intent-filter>
