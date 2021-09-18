@@ -277,7 +277,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                           applicationIcon: Image.asset("assets/icon/icon.png",
                               height: 50, width: 50),
                           applicationLegalese:
-                              "A big thank you goes to all creators at unsplash.com as well as to all creators at dribble.com!",
+                              "A big thank you goes to all creators at unsplash.com, dribble.com and flaticon.com!",
                           applicationVersion: "1.0.0"),
                     ),
                     ListTile(
@@ -285,8 +285,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       title: Text("Contact",
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
-                        _launch(
-                            "https://seniorlaguna.bitbucket.io/contact.html");
+                        _launch("https://seniorlaguna.github.io/contact.html");
                         Navigator.pop(context);
                       },
                     ),
@@ -296,7 +295,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
                         _launch(
-                            "https://seniorlaguna.bitbucket.io/peace-player/terms.html");
+                            "https://seniorlaguna.github.io/peace-player/terms.html");
                         Navigator.pop(context);
                       },
                     ),
@@ -306,7 +305,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                           style: TextStyle(color: Colors.white)),
                       onTap: () {
                         _launch(
-                            "https://seniorlaguna.bitbucket.io/peace-player/privacy.html");
+                            "https://seniorlaguna.github.io/peace-player/privacy.html");
                         Navigator.pop(context);
                       },
                     )
@@ -348,7 +347,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
         return BlocListener<AdsCubit, AdsState>(
           listenWhen: (old, now) => now.like && !old.like,
-          listener: (_, __) => _askForRating(context),
+          listener: (context, _) => _askForRating(context),
           child: SafeArea(
             child: Scaffold(
               drawer: _getDrawer(context),
@@ -946,10 +945,16 @@ class LikeDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text("We need your feedback!"),
-      content:
-          Text("We would love to hear what you think about Peace Player :)"),
+      content: Text(
+          "We would love to hear what you think about Peace Player :)",
+          style: TextStyle(fontSize: 16)),
       actions: [
-        TextButton(onPressed: () => onLike(), child: Text("Let's go")),
+        TextButton(
+            onPressed: () {
+              onLike();
+              Navigator.pop(context);
+            },
+            child: Text("Let's go")),
         TextButton(
             onPressed: () => Navigator.pop(context), child: Text("Nope")),
       ],

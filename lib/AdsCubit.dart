@@ -7,19 +7,18 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:peace/AppCubit.dart';
 
 class AdsState extends Equatable {
-  final bool test;
+  //final bool test;
   final bool songs;
   final bool albums;
   final bool artists;
   final bool playlists;
   final bool like;
 
-  AdsState(this.test, this.songs, this.albums, this.artists, this.playlists,
-      this.like);
+  AdsState(this.songs, this.albums, this.artists, this.playlists, this.like);
 
   bool isReady(SelectedTab selectedTab) {
     // for testing
-    return test;
+    // return test;
 
     switch (selectedTab) {
       case SelectedTab.SONG:
@@ -34,14 +33,12 @@ class AdsState extends Equatable {
   }
 
   AdsState copyWith(
-          {bool? test,
-          bool? songs,
+          {bool? songs,
           bool? albums,
           bool? artists,
           bool? playlists,
           bool? like}) =>
       AdsState(
-          test ?? this.test,
           songs ?? this.songs,
           albums ?? this.albums,
           artists ?? this.artists,
@@ -49,7 +46,7 @@ class AdsState extends Equatable {
           like ?? this.like);
 
   @override
-  List<Object?> get props => [test, songs, albums, artists, playlists, like];
+  List<Object?> get props => [songs, albums, artists, playlists, like];
 }
 
 class AdsCubit extends Cubit<AdsState> {
@@ -58,11 +55,11 @@ class AdsCubit extends Cubit<AdsState> {
       BlocProvider.of<AdsCubit>(context);
 
   /// ads
-  final BannerAd testBanner = BannerAd(
-      size: AdSize.banner,
-      adUnitId: "ca-app-pub-3940256099942544/6300978111",
-      listener: BannerAdListener(),
-      request: AdRequest());
+  // final BannerAd testBanner = BannerAd(
+  //     size: AdSize.banner,
+  //     adUnitId: "ca-app-pub-3940256099942544/6300978111",
+  //     listener: BannerAdListener(),
+  //     request: AdRequest());
 
   final BannerAd songsBanner = BannerAd(
       size: AdSize.banner,
@@ -88,8 +85,8 @@ class AdsCubit extends Cubit<AdsState> {
       listener: BannerAdListener(),
       request: AdRequest());
 
-  AdsCubit() : super(AdsState(false, false, false, false, false, false)) {
-    testBanner.load().then((value) => emit(state.copyWith(test: true)));
+  AdsCubit() : super(AdsState(false, false, false, false, false)) {
+    //testBanner.load().then((value) => emit(state.copyWith(test: true)));
     songsBanner.load().then((value) => emit(state.copyWith(songs: true)));
     albumsBanner.load().then((value) => emit(state.copyWith(albums: true)));
     artistsBanner.load().then((value) => emit(state.copyWith(artists: true)));
@@ -99,8 +96,10 @@ class AdsCubit extends Cubit<AdsState> {
 
     // check app starts
 
-    Hive.openBox("ads").then((box) {
+    Hive.openBox("ads").then((box) async {
       int starts = box.get("starts", defaultValue: 0);
+
+      await Future.delayed(Duration(seconds: 3));
 
       // show dialog after 5th start
       if (starts == 5) {
@@ -119,9 +118,6 @@ class AdsCubit extends Cubit<AdsState> {
   }
 
   BannerAd getBanner(SelectedTab selectedTab) {
-    // for test
-    return testBanner;
-
     switch (selectedTab) {
       case SelectedTab.SONG:
         return songsBanner;
@@ -140,7 +136,7 @@ class AdsCubit extends Cubit<AdsState> {
     albumsBanner.dispose();
     artistsBanner.dispose();
     playlistsBanner.dispose();
-    testBanner.dispose();
+    //testBanner.dispose();
     super.close();
   }
 }

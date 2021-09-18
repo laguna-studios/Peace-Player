@@ -28,10 +28,12 @@ class BackgroundAudioService extends BackgroundAudioTask {
 
   @override
   Future<void> onPause() async {
-    AudioServiceBackground.setState(
-        controls: [MediaControl.play, MediaControl.stop],
-        playing: false,
-        processingState: AudioProcessingState.ready);
+    AudioServiceBackground.setState(controls: [
+      MediaControl.skipToPrevious,
+      MediaControl.play,
+      MediaControl.skipToNext,
+      MediaControl.stop
+    ], playing: false, processingState: AudioProcessingState.ready);
     await _player.pause();
   }
 
@@ -101,12 +103,12 @@ class BackgroundAudioService extends BackgroundAudioTask {
   }
 
   void _getFreshState() {
-    print("WWW push state");
+    //print("WWW push state");
     int? index = _player.currentIndex;
-    print("WWW current index: $index");
-    if (index != null || _mediaItemPlaylist.isNotEmpty) {
+    //print("WWW current index: $index");
+    if (index != null && _mediaItemPlaylist.isNotEmpty) {
       AudioServiceBackground.sendCustomEvent(
-          [0, _mediaItemPlaylist[index!].toJson()]);
+          [0, _mediaItemPlaylist[index].toJson()]);
 
       AudioServiceBackground.setMediaItem(
           _mediaItemPlaylist[index].copyWith(duration: _player.duration));
@@ -125,13 +127,13 @@ class BackgroundAudioService extends BackgroundAudioTask {
     );
 
     Duration? duration = _player.duration;
-    print("WWW duration: $duration");
+    //print("WWW duration: $duration");
     if (duration != null) {
       AudioServiceBackground.sendCustomEvent([1, duration.inSeconds]);
     }
 
     Duration position = _player.position;
-    print("WWW position: $position");
+    //print("WWW position: $position");
     AudioServiceBackground.setState(position: position);
   }
 
@@ -198,7 +200,7 @@ class BackgroundAudioService extends BackgroundAudioTask {
       case AudioServiceRepeatMode.group:
         // shuffle impro
         _player.setShuffleModeEnabled(true);
-        _player.setLoopMode(LoopMode.off);
+        _player.setLoopMode(LoopMode.all);
         break;
     }
   }

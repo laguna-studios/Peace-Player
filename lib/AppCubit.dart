@@ -109,7 +109,7 @@ class AppCubit extends Cubit<AppState> {
   }
 
   void _onCurrentMediaItemChanged(MediaItem mediaItem) {
-    print("new media item: $mediaItem");
+    //print("new media item: $mediaItem");
     emit(state.copyWith(currentMediaItem: mediaItem));
   }
 
@@ -143,7 +143,7 @@ class AppCubit extends Cubit<AppState> {
 
   bool _isSupportedAudio(String path) {
     var suffix = path.split(".").last;
-    return ["mp3", "wav", "m4a"].contains(suffix);
+    return ["mp3", "wav", "m4a", "ogg"].contains(suffix.toLowerCase());
   }
 
   Future<void> _initDatabase() async {
@@ -215,8 +215,8 @@ class AppCubit extends Cubit<AppState> {
                   artists.put(song.artist, Artist(song.artist, false));
                 }
               } catch (e, s) {
-                print("skipping : ${entity.path}");
-                print(s);
+                //print("skipping : ${entity.path}");
+                //print(s);
               }
             }
             break;
