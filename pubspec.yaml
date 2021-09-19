@@ -42,9 +42,6 @@ dependencies:
   permission_handler: null
   url_launcher: ^6.0.10
 
-dependency_overrides:
-  freezed_annotation: 0.14.2
-
 dev_dependencies:
   build_runner: ^2.1.2
   flutter_launcher_icons: "^0.9.2"
