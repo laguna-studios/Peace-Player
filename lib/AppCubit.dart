@@ -143,7 +143,7 @@ class AppCubit extends Cubit<AppState> {
 
   bool _isSupportedAudio(String path) {
     var suffix = path.split(".").last;
-    return ["mp3", "wav", "m4a", "ogg"].contains(suffix.toLowerCase());
+    return ["mp3", "wav", "m4a"].contains(suffix.toLowerCase());
   }
 
   Future<void> _initDatabase() async {
@@ -185,7 +185,7 @@ class AppCubit extends Cubit<AppState> {
       var dir = dirsToCheck.removeAt(0);
 
       // skip directory
-      if (File(join(dir.path, ".nomedia")).existsSync()) break;
+      if (File(join(dir.path, ".nomedia")).existsSync()) continue;
 
       for (var entity in dir.listSync()) {
         switch (entity.statSync().type) {
